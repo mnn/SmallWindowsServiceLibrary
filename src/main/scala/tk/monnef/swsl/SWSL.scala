@@ -56,16 +56,12 @@ object ParsingHelper {
     buff :+ current
   }
 
-  def splitByDelimiter[T](data: Seq[T], delimiter: T): Seq[Seq[T]] = {
-    var buff = ListBuffer(ListBuffer[T]())
-    for {item <- data} {
-      if (item == delimiter && buff.last.nonEmpty) {
-        buff += ListBuffer[T]()
-      }
-      else if (item != delimiter) buff.last += item
-    }
-    buff.filterNot(_.isEmpty)
-  }
+  def splitByDelimiter[T](data: Seq[T], delimiter: T): Seq[Seq[T]] =
+    data.foldLeft(List(List[T]())) { (buff: List[List[T]], item) =>
+      if (item == delimiter && buff.last.nonEmpty) buff :+ List[T]()
+      else if (item != delimiter) buff.dropRight(1) :+ (buff.last :+ item)
+      else buff
+    }.filterNot(_.isEmpty)
 
   def createServiceDescriptor(lines: Seq[String]): ServiceDescriptor = {
     val fieldMap = lines.map(convertLineToField).toMap
@@ -100,7 +96,7 @@ object ServiceStatus {
     case "Running" => StatusRunning
     case "Stopped" => StatusStopped
     case "Paused" => StatusPaused
-    case s => throw new ParsingException(s"Unknown status $s")
+    case s: String => throw new ParsingException(s"Unknown status $s")
   }
 }
 
