@@ -7,7 +7,7 @@ class TestParsing extends FlatSpec {
   import SWSL._
   import ParsingHelper._
 
-  val DISAPLY_NAME = "DisplayName"
+  val DISPLAY_NAME = "DisplayName"
 
   "convertLineToField method" should "parse a standard field" in {
     assert(convertLineToField("DependentServices   : {WwanSvc, WbioSrvc, wudfsvc, vds...}") ==("DependentServices", "{WwanSvc, WbioSrvc, wudfsvc, vds...}"))
@@ -53,7 +53,7 @@ class TestParsing extends FlatSpec {
 
   // ---
 
-  val (fn_name, fn_title, fn_status) = ("Name", DISAPLY_NAME, "Status")
+  val (fn_name, fn_title, fn_status) = ("Name", DISPLAY_NAME, "Status")
 
   "createServiceDescriptor" should "parse and create matching service descriptors" in {
     val d = createServiceDescriptor(
@@ -76,7 +76,7 @@ class TestParsing extends FlatSpec {
   "executeGetService" should "return output of Get-Service" in {
     val data = executeGetService()
     assert(data.nonEmpty)
-    assert(data.filter { l => l.startsWith(DISAPLY_NAME) && l.contains(TASK_SCHEDULER)}.nonEmpty, data)
+    assert(data.filter { l => l.startsWith(DISPLAY_NAME) && l.contains(TASK_SCHEDULER)}.nonEmpty, data)
   }
 
   // ---
@@ -85,7 +85,7 @@ class TestParsing extends FlatSpec {
     val list = generateServiceList()
     assert(list.services.nonEmpty)
     assert(list.services.exists(_.title == TASK_SCHEDULER))
-    assert((list.paused ++ list.stopped ++ list.running).toSet == list.services.toSet)
+    assert((list.paused ++ list.stopped ++ list.running ++ list.stopPending).toSet == list.services.toSet)
   }
 
   // ---
