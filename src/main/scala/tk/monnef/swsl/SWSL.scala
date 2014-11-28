@@ -3,6 +3,8 @@ package tk.monnef.swsl
 import scala.sys.process._
 import scala.collection.mutable.ListBuffer
 import Utils._
+import scala.util.control.NonFatal
+import scala.annotation.tailrec
 
 object SWSL {
 
@@ -32,28 +34,29 @@ object ExecutionHelper {
     try {
       code
     } catch {
-      case e: Throwable => throw new ExecutionException(errorMessage, e)
+      case NonFatal(e) => throw new ExecutionException(errorMessage, e)
     }
   }
 
   def executeGetService(): Seq[String] = wrapAnyException("Unable to execute Get-Service powershell command") {
-    Seq("powershell", "-command ", "Get-Service | Format-List").lineStream.toSeq
+    Seq("powershell", "-command ", "Get-Service | Format-List").lineStream.toList
   }
 }
 
 object ParsingHelper {
   def joinLinesStartingWithSpace(lines: Seq[String]): Seq[String] = {
-    if (lines.size <= 1) lines
-    var buff = ListBuffer[String]()
-    var current: String = lines(0)
-    for {line <- lines.drop(1)} {
-      if (line.startsWith(" ")) current += line.dropWhile(_ == ' ')
-      else {
-        buff += current
-        current = line
+    @tailrec
+    def loop(current: String, rest: Seq[String], result: Seq[String]): Seq[String] = {
+      rest match {
+        case line :: restTail =>
+          if (line.startsWith(" ")) loop(current + line.dropWhile(_ == ' '), restTail, result)
+          else loop(line, restTail, result :+ current)
+        case _ => result :+ current
       }
     }
-    buff :+ current
+
+    if (lines.size <= 1) lines
+    else loop(lines(0), lines.drop(1), Seq())
   }
 
   def splitByDelimiter[T](data: Seq[T], delimiter: T): Seq[Seq[T]] =
