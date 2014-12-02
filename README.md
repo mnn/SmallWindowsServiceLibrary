@@ -19,8 +19,7 @@ println(descs.mkString(", "))
 
 This code gives following output (tuncated):
 ```
-Application Experience, Application Layer Gateway Service, Application Information, Application Management, Windows Audio Endpoint Builder,
- Windows Audio, Base Filtering Engine, Background Intelligent Transfer Service, Computer Browser, ...
+Application Experience, Application Layer Gateway Service, Application Information, Application Management, Windows Audio Endpoint Builder,  Windows Audio, Base Filtering Engine, Background Intelligent Transfer Service, Computer Browser, ...
 ```
 
 More examples can be found at `demo` directory (Scala scripts).
@@ -33,5 +32,5 @@ Requirements
 
 License
 -------
-GNU General Public License 3 (GPL3)
+GNU General Public License 3 (GPL3)  
 For more details read `LICENSE.txt`.
